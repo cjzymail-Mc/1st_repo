@@ -74,6 +74,9 @@ TODO: 如 black . 或 ruff format
 TODO: 如 ruff check 或 flake8
 ```
 
+**Claude Code 自定义命令**：
+- `/safe-commit` - 安全提交（仅 git add 和 commit，不会 push）
+
 ---
 
 ## 📋 已知问题与解决方案
@@ -121,12 +124,34 @@ TODO: 如 ruff check 或 flake8
 
 ---
 
+### 问题 4：自定义命令无法识别
+
+**现象**：
+- 输入 `/my-command` 时提示 `Unknown skill: my-command`
+- 明明已在 `.claude/commands/` 目录创建了配置文件
+
+**原因**：文件名和 JSON 内的 `name` 字段不匹配
+
+**示例**：
+| ❌ 错误配置 | ✅ 正确配置 |
+|------------|------------|
+| 文件名：`mc1-safe-commit.json`<br>name: `"safe-commit"` | 文件名：`safe-commit.json`<br>name: `"safe-commit"` |
+
+**解决方案**：
+1. 确保文件名（去掉 .json）和 JSON 中的 `name` 字段完全一致
+2. 重命名文件后重启 Claude Code 会话
+3. 当遇到无法识别的命令时，主动检查 `.claude/commands/` 目录下的文件名和配置
+
+---
+
 ## 📝 变更记录
 
 | 日期 | 内容 |
 |------|------|
 | 2025-01-15 | 初始化 CLAUDE.md，添加路径规范 |
 | 2025-01-15 | 添加中文符号错误问题记录，完善项目入口信息 |
+| 2026-01-15 | Mc第一次尝试 /safe-commit 快捷指令，真是值得纪念啊！|
+| 2026-01-16 | 添加自定义命令配置问题记录，补充 /safe-commit 到常用命令 |
 
 ---
 
