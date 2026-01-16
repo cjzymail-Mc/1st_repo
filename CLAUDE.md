@@ -144,6 +144,76 @@ TODO: 如 ruff check 或 flake8
 
 ---
 
+### 问题 5：处理 Excel 文件汇总与中文编码
+
+**现象**：
+- 需要读取和汇总多个 Excel 文件
+- 中文在控制台输出时显示乱码
+- 不同文件列结构不一致
+
+**关键技巧（避免绕弯）**：
+
+1. **Excel 文件不能直接读取**
+   - ❌ 不要用 Read 工具读取 .xlsx 文件（二进制文件）
+   - ✅ 直接写 Python 脚本使用 `pandas` + `openpyxl`
+
+2. **处理中文的标准模板**
+   ```python
+   # -*- coding: utf-8 -*-
+   import pandas as pd
+   import sys
+
+   # 设置输出编码（避免控制台乱码）
+   sys.stdout.reconfigure(encoding='utf-8')
+   ```
+
+3. **高效处理流程**
+   ```python
+   # 第一步：先分析模板结构
+   template_df = pd.read_excel('模板.xlsx', sheet_name=0)
+   print(template_df.columns.tolist())  # 查看列名
+
+   # 第二步：读取所有待汇总文件
+   all_data = []
+   for file in files:
+       df = pd.read_excel(file, sheet_name=0)
+       all_data.append(df)
+
+   # 第三步：合并数据
+   merged_df = pd.concat(all_data, ignore_index=True)
+
+   # 第四步：处理列不一致问题
+   # 统一列顺序、填充缺失列、重新编号等
+
+   # 第五步：保存并设置格式
+   with pd.ExcelWriter('output.xlsx', engine='openpyxl') as writer:
+       merged_df.to_excel(writer, sheet_name='Sheet1', index=False)
+       # 可选：设置列宽
+       worksheet = writer.sheets['Sheet1']
+       worksheet.column_dimensions['A'].width = 10
+   ```
+
+4. **处理列不一致的窍门**
+   - 使用 `pd.concat()` 自动合并，缺失列会填充 NaN
+   - 用 `fillna('')` 将空值转为空字符串
+   - 用列表定义最终列顺序：`df = df[final_columns]`
+   - 重新编号：`df['编号'] = range(1, len(df) + 1)`
+
+5. **常见依赖库**
+   ```bash
+   pip install pandas openpyxl
+   ```
+
+**快速检查清单**：
+- [ ] 检查是否安装了 pandas 和 openpyxl
+- [ ] 文件头添加 `# -*- coding: utf-8 -*-`
+- [ ] 添加 `sys.stdout.reconfigure(encoding='utf-8')`
+- [ ] 先分析模板结构，了解目标格式
+- [ ] 处理列不一致问题（有的文件多列/少列）
+- [ ] 设置合适的列宽以便查看
+
+---
+
 ## 📝 变更记录
 
 | 日期 | 内容 |
@@ -152,6 +222,7 @@ TODO: 如 ruff check 或 flake8
 | 2025-01-15 | 添加中文符号错误问题记录，完善项目入口信息 |
 | 2026-01-15 | Mc第一次尝试 /safe-commit 快捷指令，真是值得纪念啊！|
 | 2026-01-16 | 添加自定义命令配置问题记录，补充 /safe-commit 到常用命令 |
+| 2026-01-16 | 添加 Excel 文件处理与中文编码的完整解决方案和快捷技巧 |
 
 ---
 
