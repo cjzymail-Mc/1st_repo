@@ -21,7 +21,7 @@ files_to_merge = [
     '张宇昂—2025年报告明细统计表.xlsx'
 ]
 
-print("=== 开始处理Excel文件汇总（v3） ===\n")
+print("=== 开始处理Excel文件汇总（v4） ===\n")
 
 # 读取模板文件以了解结构
 print(f"正在读取模板文件: {template_file.name}")
